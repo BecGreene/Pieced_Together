@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class BoardManager : MonoBehaviour
 {
@@ -11,15 +12,21 @@ public class BoardManager : MonoBehaviour
     private int height;
     public int Height { get => height; }
     public static BoardManager Instance;
-    // Start is called before the first frame update
+
+    //I was being lazy with these two variables. There
+    //is probably a better way to do this, just didn't
+    //feel like doing that
+    public GameObject WinScreen;
+    public TextMeshProUGUI WinText;
+    private int Moves = 0;
     void Awake()
     {
         Instance = this;
     }
-
-    // Update is called once per frame
-    void Update()
+    public static void UpdateMoves() => Instance.Moves++;
+    public void DisplayWin()
     {
-        
+        WinText.text = $"You won in {Moves} moves!";
+        WinScreen.SetActive(true);
     }
 }
