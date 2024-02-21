@@ -52,6 +52,9 @@ public class Block : MonoBehaviour
     /// that is the barrier at the edge of the board. For the target block,
     /// it's 300 because we will not have a board that is 300 wide.
     /// </summary>
+    [SerializeField] AudioClip moveBlockClip;
+    [SerializeField] AudioClip collideBlockClip;
+    bool clipPlayed = false;
     private int XRange { get
         {
             if (type != Type.Mystery) return BoardManager.Instance.Width - size;
@@ -69,10 +72,20 @@ public class Block : MonoBehaviour
         if (!dragging) return;
         //Move it
         Vector3 moveVec = cam.ScreenToWorldPoint(Input.mousePosition) + offset;
-        pos = transform.position;
-        //But don't let it leave the board or go through other blocks
-        ClampVal(moveVec);
-        transform.position = pos;
+        if (Vector2.Distance(moveVec, transform.position) < 0.8)
+        {
+            pos = transform.position;
+            ClampVal(moveVec);
+            transform.position = pos;
+
+            if (!clipPlayed)
+            {
+                AudioSource.PlayClipAtPoint(moveBlockClip, cam.transform.position);
+                clipPlayed = true;
+            }
+
+
+        }
     }
     private void OnMouseDown()
     {
@@ -82,6 +95,7 @@ public class Block : MonoBehaviour
         xClamp = new Vector2(0, XRange);
         yClamp = new Vector2(0, YRange);
         dragging = true;
+        clipPlayed = false;
     }
     private void OnMouseUp()
     {
@@ -90,6 +104,7 @@ public class Block : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        AudioSource.PlayClipAtPoint(collideBlockClip, cam.transform.position);
         if (!dragging) return;
         //Get pos of collided object, the change the clamps
         //based on where the other block is. This is to stop the
