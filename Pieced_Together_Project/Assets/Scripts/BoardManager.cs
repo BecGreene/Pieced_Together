@@ -19,11 +19,17 @@ public class BoardManager : MonoBehaviour
     public GameObject WinScreen;
     public TextMeshProUGUI WinText;
     private int Moves = 0;
+    public TextMeshProUGUI MovesText;
     void Awake()
     {
         Instance = this;
     }
-    public static void UpdateMoves() => Instance.Moves++;
+    public static void UpdateMoves()
+    {
+        Instance.Moves++;
+        Instance.MovesText.text = $"Moves: {Instance.Moves}";
+    }
+
     public void DisplayWin()
     {
         WinText.text = $"You won in {Moves} moves!";

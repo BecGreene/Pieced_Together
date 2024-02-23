@@ -55,6 +55,9 @@ public class Block : MonoBehaviour
     [SerializeField] AudioClip moveBlockClip;
     [SerializeField] AudioClip collideBlockClip;
     bool clipPlayed = false;
+
+    private float sizeChange = 0.1f;
+
     private int XRange { get
         {
             if (type != Type.Mystery) return BoardManager.Instance.Width - size;
@@ -72,33 +75,42 @@ public class Block : MonoBehaviour
         if (!dragging) return;
         //Move it
         Vector3 moveVec = cam.ScreenToWorldPoint(Input.mousePosition) + offset;
-        if (Vector2.Distance(moveVec, transform.position) < 0.8)
+        if (Vector2.Distance(moveVec, transform.position) > 0.9f)
         {
-            pos = transform.position;
-            ClampVal(moveVec);
-            transform.position = pos;
+            moveVec -= (transform.position * 0.9f);
+            Vector3 newMousePos = cam.WorldToScreenPoint(moveVec - offset);
+            Input.mousePosition.Set(newMousePos.x, newMousePos.y, 0);
+        }
+        /*else if (Vector2.Distance(moveVec, transform.position) > 0.8f)
+        {
+            moveVec = (moveVec.normalized * 0.8f) + transform.position;
+        }*/
+        pos = transform.position;
+        ClampVal(moveVec);
+        transform.position = pos;
 
-            if (!clipPlayed)
-            {
-                AudioSource.PlayClipAtPoint(moveBlockClip, cam.transform.position);
-                clipPlayed = true;
-            }
-
-
+        if (!clipPlayed)
+        {
+            AudioSource.PlayClipAtPoint(moveBlockClip, cam.transform.position);
+            clipPlayed = true;
         }
     }
     private void OnMouseDown()
     {
-        offset = transform.position - cam.ScreenToWorldPoint(Input.mousePosition);
-        StartingPos = transform.position;
         //Reset clamps
         xClamp = new Vector2(0, XRange);
         yClamp = new Vector2(0, YRange);
         dragging = true;
         clipPlayed = false;
+        transform.localScale = new Vector3(transform.localScale.x - sizeChange, transform.localScale.y - sizeChange, 1);
+        transform.position = new Vector3(transform.position.x + (sizeChange / 2f), transform.position.y - (sizeChange / 2f), 1);
+        offset = transform.position - cam.ScreenToWorldPoint(Input.mousePosition);
+        StartingPos = transform.position;
     }
     private void OnMouseUp()
     {
+        transform.localScale = new Vector3(transform.localScale.x + sizeChange, transform.localScale.y + sizeChange, 1);
+        transform.position = new Vector3(transform.position.x - (sizeChange / 2f), transform.position.y + (sizeChange / 2f), 1);
         SnapToPlace();
         CheckWin();
     }
@@ -108,7 +120,7 @@ public class Block : MonoBehaviour
         if (!dragging) return;
         //Get pos of collided object, the change the clamps
         //based on where the other block is. This is to stop the
-        //player from being able to frag the block through other blocks
+        //player from being able to drag the block through other blocks
         Vector2 cPos = collision.transform.position;
         if (direction == Direction.horizontal)
         {
