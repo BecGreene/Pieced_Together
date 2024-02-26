@@ -16,7 +16,8 @@ public class Block : MonoBehaviour
     public enum Direction
     {
         vertical = 0,
-        horizontal = 1
+        horizontal = 1,
+        none = 2
     }
     /// <summary>
     /// The type of the block. Normal, heated, iced, etc.
@@ -64,13 +65,17 @@ public class Block : MonoBehaviour
             return 300;
         } }
     private int YRange { get => (BoardManager.Instance.Height - size) * -1; }
+
+    private Vector3 lastMousePos;
+    //public Vector3 collPos;
+    private float SpeedCap = 0.5f;
     void Start()
     {
         cam = Camera.main;
         xClamp = new Vector2(0, XRange);
         yClamp = new Vector2(0, YRange);
     }
-    private void OnMouseDrag()
+    /*private void OnMouseDrag()
     {
         if (!dragging) return;
         //Move it
@@ -81,10 +86,10 @@ public class Block : MonoBehaviour
             Vector3 newMousePos = cam.WorldToScreenPoint(moveVec - offset);
             Input.mousePosition.Set(newMousePos.x, newMousePos.y, 0);
         }
-        /*else if (Vector2.Distance(moveVec, transform.position) > 0.8f)
+        else if (Vector2.Distance(moveVec, transform.position) > 0.8f)
         {
             moveVec = (moveVec.normalized * 0.8f) + transform.position;
-        }*/
+        }
         pos = transform.position;
         ClampVal(moveVec);
         transform.position = pos;
@@ -113,37 +118,139 @@ public class Block : MonoBehaviour
         transform.position = new Vector3(transform.position.x - (sizeChange / 2f), transform.position.y + (sizeChange / 2f), 1);
         SnapToPlace();
         CheckWin();
+    }*/
+    private void Update()
+    {
+        if (!dragging) return;
+        Vector3 delta = Input.mousePosition - lastMousePos;
+        delta.z = 0;
+        if (delta.magnitude == 0) return;
+
+        delta = cam.ScreenToWorldPoint(Input.mousePosition) - cam.ScreenToWorldPoint(lastMousePos);
+
+        if (direction == Direction.horizontal)
+        {
+            delta.y = 0;
+        }
+        else if (direction == Direction.vertical)
+        {
+            delta.x = 0;
+        }
+        if (delta.magnitude >= SpeedCap) delta = delta.normalized * SpeedCap;
+        lastMousePos = Input.mousePosition;
+        /*collPos += delta;
+        Vector3 moveVec = cam.ScreenToWorldPoint(collPos) + offset;
+        moveVec.z = 1;
+        Debug.Log($"1. Delta: {delta}   CollPos: {collPos}    MoveVec: {moveVec}    Pos:{pos}");*/
+
+        pos = transform.position;
+        pos += delta;
+        ClampVal(pos);
+        //ClampVal(moveVec);
+        //collPos = cam.WorldToScreenPoint(pos);
+        //Debug.Log($"2. Delta: {delta}   CollPos: {collPos}    MoveVec: {moveVec}    Pos:{pos}");
+        transform.position = pos;
+
+        if (!clipPlayed)
+        {
+            AudioSource.PlayClipAtPoint(moveBlockClip, cam.transform.position);
+            clipPlayed = true;
+        }
+
+        CollisionCursor.MoveTo(cam.WorldToScreenPoint(pos - offset));
+    }
+    public bool CallMouseDrag()
+    {
+        if (!dragging) return false;
+        //Move it
+        Vector3 moveVec = cam.ScreenToWorldPoint(CollisionCursor.Instance.collPos) + offset;
+        /*if (Vector2.Distance(moveVec, transform.position) > 0.9f)
+        {
+            moveVec -= (transform.position * 0.9f);
+            Vector3 newMousePos = cam.WorldToScreenPoint(moveVec - offset);
+            CollisionCursor.Instance.collPos = newMousePos;
+            Input.mousePosition.Set(newMousePos.x, newMousePos.y, 0);
+        }
+        else if (Vector2.Distance(moveVec, transform.position) > 0.8f)
+        {
+            moveVec = (moveVec.normalized * 0.8f) + transform.position;
+        }*/
+        pos = transform.position;
+        ClampVal(moveVec);
+        bool moved = pos == transform.position;
+        transform.position = pos;
+
+        if (!clipPlayed)
+        {
+            AudioSource.PlayClipAtPoint(moveBlockClip, cam.transform.position);
+            clipPlayed = true;
+        }
+        return moved;
+    }
+    public Direction CallMouseDown()
+    {
+        //Reset clamps
+        xClamp = new Vector2(0, XRange);
+        yClamp = new Vector2(0, YRange);
+        dragging = true;
+        clipPlayed = false;
+        StartingPos = transform.position;
+        transform.localScale = new Vector3(transform.localScale.x - sizeChange, transform.localScale.y - sizeChange, 1);
+        transform.position = new Vector3(transform.position.x + (sizeChange / 2f), transform.position.y - (sizeChange / 2f), 1);
+        offset = transform.position - cam.ScreenToWorldPoint(CollisionCursor.Instance.collPos);
+        return direction;
+    }
+    public void TakeControl(/*Vector3 lastMP, Vector3 cP*/)
+    {
+        lastMousePos = Input.mousePosition;
+        //collPos = cP;
+    }
+    public void CallMouseUp()
+    {
+        transform.localScale = Vector3.one;//new Vector3(transform.localScale.x + sizeChange, transform.localScale.y + sizeChange, 1);
+        transform.position = new Vector3(transform.position.x - (sizeChange / 2f), transform.position.y + (sizeChange / 2f), 1);
+        SnapToPlace();
+        CheckWin();
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!dragging || !collision.gameObject.CompareTag("Block")) return;
         AudioSource.PlayClipAtPoint(collideBlockClip, cam.transform.position);
-        if (!dragging) return;
         //Get pos of collided object, the change the clamps
         //based on where the other block is. This is to stop the
         //player from being able to drag the block through other blocks
         Vector2 cPos = collision.transform.position;
+        Block collScript = collision.gameObject.GetComponent<Block>();
+        //int dir = 0;
+        //float val;
         if (direction == Direction.horizontal)
         {
             if(cPos.x > transform.position.x)
             {
-                xClamp.y = cPos.x - size;
+                //dir = 1;
+                xClamp.y = cPos.x - size + (sizeChange / 2f);
             }
             else
             {
-                xClamp.x = cPos.x + 1;
+                xClamp.x = cPos.x + 
+                    (collScript.direction == Direction.horizontal ? collScript.size : 1);
             }
         }
         else
         {
             if (cPos.y > transform.position.y)
             {
-                yClamp.x = cPos.y - 1;
+                //dir = 2;
+                yClamp.x = cPos.y - 
+                    (collScript.direction == Direction.vertical ? collScript.size : 1);
             }
             else
             {
-                yClamp.y = cPos.y + size;
+                //dir = 3;
+                yClamp.y = cPos.y + size - (sizeChange / 2f);
             }
         }
+        //CollisionCursor.Instance.BlockCollided(this, dir, val);
     }
     /// <summary>
     /// Called when a block has stopped being dragged. 
