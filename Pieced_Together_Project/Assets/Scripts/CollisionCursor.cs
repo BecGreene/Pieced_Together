@@ -10,7 +10,6 @@ public class CollisionCursor : MonoBehaviour
     [DllImport("user32.dll")]
     static extern bool SetCursorPos(int X, int Y);
     private Vector3 lastMousePos;
-    private float sensitivity = 1;
     public Vector3 collPos;
     private Camera cam;
     private int XRange => BoardManager.Instance.Width;
@@ -19,12 +18,11 @@ public class CollisionCursor : MonoBehaviour
     private Vector2 xClamp;
     private Vector2 yClamp;
     public Texture2D[] CursorImages;
-    private bool overBlock = false;
     private GameObject collidedBlock;
     private Block collidedScript;
     public static CollisionCursor Instance;
-    private int SpeedCap = 25;
-    private Block.Direction direction = Block.Direction.none;
+    //private int SpeedCap = 25;
+    //private Block.Direction direction = Block.Direction.none;
     private bool dragging = false;
 
     // Start is called before the first frame update
@@ -51,39 +49,33 @@ public class CollisionCursor : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                direction = collidedScript.CallMouseDown();
-                collidedScript.TakeControl(/*lastMousePos, collPos*/);
+                /*direction = */collidedScript.CallMouseDown();
                 dragging = true;
             }
             if (Input.GetMouseButtonUp(0))
             {
                 collidedScript.CallMouseUp();
-                direction = Block.Direction.none;
+                //direction = Block.Direction.none;
                 dragging = false;
-                xClamp = new Vector2(0, XRange);
-                yClamp = new Vector2(0, YRange);
+                lastMousePos = Input.mousePosition;
+                collPos = cam.WorldToScreenPoint(transform.position);
+                return;
             }
 
         }
-        if (dragging && Input.GetMouseButton(0))
-        {
-            //collidedScript.CallMouseDrag();
-            return;
-        }
+        if (dragging && Input.GetMouseButton(0)) return;
 
-        /*if (!overBlock) {
-            Cursor.SetCursor(CursorImages[0], Vector2.zero, CursorMode.Auto);
-        }*/
         Vector3 delta = Input.mousePosition - lastMousePos;
-        if (delta.magnitude >= SpeedCap) delta = delta.normalized * SpeedCap;
-        if(direction == Block.Direction.horizontal)
+        if (delta == Vector3.zero) return;
+        //if (delta.magnitude >= SpeedCap) delta = delta.normalized * SpeedCap;
+        /*if(direction == Block.Direction.horizontal)
         {
             delta.y = 0;
         }
         else if (direction == Block.Direction.vertical)
         {
             delta.x = 0;
-        }
+        }*/
         lastMousePos = Input.mousePosition;
         collPos += delta;
         Vector3 worldPos = cam.ScreenToWorldPoint(collPos);
@@ -92,39 +84,18 @@ public class CollisionCursor : MonoBehaviour
         transform.position = worldPos;
         collPos = cam.WorldToScreenPoint(worldPos);
     }
-    /*public void BlockCollided(Block who, int dir, float val)
-    {
-        if (who != collidedScript) return;
-        switch (dir)
-        {
-            case 0:
-                xClamp.x = val;
-                break;
-            case 1:
-                xClamp.y = val;
-                break;
-            case 2:
-                yClamp.x = val;
-                break;
-            case 3:
-                yClamp.y = val;
-                break;
-        }
-    }*/
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.gameObject.CompareTag("Block") || dragging) return;
+        if (!collision.gameObject.CompareTag("Block") || dragging || Block.Won) return;
         collidedBlock = collision.gameObject;
         collidedScript = collidedBlock.GetComponent<Block>();
         Cursor.SetCursor(CursorImages[1], Vector2.zero, CursorMode.Auto);
-        overBlock = true;
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (!collision.gameObject.CompareTag("Block")) return;
         if (collidedBlock == null || collidedBlock != collision.gameObject) return;
         Cursor.SetCursor(CursorImages[0], Vector2.zero, CursorMode.Auto);
-        overBlock = false;
         if (!Input.GetMouseButton(0) && !dragging)
         {
             collidedBlock = null;

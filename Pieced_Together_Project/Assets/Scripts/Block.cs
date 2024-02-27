@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Block : MonoBehaviour
@@ -16,15 +14,14 @@ public class Block : MonoBehaviour
     public enum Direction
     {
         vertical = 0,
-        horizontal = 1,
-        none = 2
+        horizontal = 1
     }
     /// <summary>
     /// The type of the block. Normal, heated, iced, etc.
     /// </summary>
     public enum Type
     {
-        Mystery,
+        Target,
         Normal
     }
     public Direction direction = Direction.vertical;
@@ -58,97 +55,63 @@ public class Block : MonoBehaviour
     bool clipPlayed = false;
 
     private float sizeChange = 0.1f;
+    private float sizeOffset;
 
-    private int XRange { get
-        {
-            if (type != Type.Mystery) return BoardManager.Instance.Width - size;
-            return 300;
-        } }
-    private int YRange { get => (BoardManager.Instance.Height - size) * -1; }
+    private int XRange;
+    private int YRange;
 
     private Vector3 lastMousePos;
-    //public Vector3 collPos;
-    private float SpeedCap = 0.5f;
+    private readonly float speedCap = 0.5f;
+    public static bool Won = false;
+    public int XSize;
+    public int YSize;
     void Start()
     {
         cam = Camera.main;
+        sizeOffset = sizeChange / 2f;
+        YRange = (BoardManager.Instance.Height - size) * -1;
+        XRange = (type != Type.Target) ? BoardManager.Instance.Width - size : 300;
         xClamp = new Vector2(0, XRange);
         yClamp = new Vector2(0, YRange);
+        XSize = direction == Direction.horizontal ? size : 1;
+        YSize = direction == Direction.vertical ? size : 1;
     }
-    /*private void OnMouseDrag()
-    {
-        if (!dragging) return;
-        //Move it
-        Vector3 moveVec = cam.ScreenToWorldPoint(Input.mousePosition) + offset;
-        if (Vector2.Distance(moveVec, transform.position) > 0.9f)
-        {
-            moveVec -= (transform.position * 0.9f);
-            Vector3 newMousePos = cam.WorldToScreenPoint(moveVec - offset);
-            Input.mousePosition.Set(newMousePos.x, newMousePos.y, 0);
-        }
-        else if (Vector2.Distance(moveVec, transform.position) > 0.8f)
-        {
-            moveVec = (moveVec.normalized * 0.8f) + transform.position;
-        }
-        pos = transform.position;
-        ClampVal(moveVec);
-        transform.position = pos;
-
-        if (!clipPlayed)
-        {
-            AudioSource.PlayClipAtPoint(moveBlockClip, cam.transform.position);
-            clipPlayed = true;
-        }
-    }
-    private void OnMouseDown()
-    {
-        //Reset clamps
-        xClamp = new Vector2(0, XRange);
-        yClamp = new Vector2(0, YRange);
-        dragging = true;
-        clipPlayed = false;
-        transform.localScale = new Vector3(transform.localScale.x - sizeChange, transform.localScale.y - sizeChange, 1);
-        transform.position = new Vector3(transform.position.x + (sizeChange / 2f), transform.position.y - (sizeChange / 2f), 1);
-        offset = transform.position - cam.ScreenToWorldPoint(Input.mousePosition);
-        StartingPos = transform.position;
-    }
-    private void OnMouseUp()
-    {
-        transform.localScale = new Vector3(transform.localScale.x + sizeChange, transform.localScale.y + sizeChange, 1);
-        transform.position = new Vector3(transform.position.x - (sizeChange / 2f), transform.position.y + (sizeChange / 2f), 1);
-        SnapToPlace();
-        CheckWin();
-    }*/
+    /// <summary>
+    /// Update is called every frame, but it will
+    /// leave immediately if the block doesn't need to be updated.
+    /// Otherwise, the block will take over control from the mouse
+    /// </summary>
     private void Update()
     {
-        if (!dragging) return;
+        if (!dragging && (!Won || (Won && type != Type.Target))) return;
+        if (Won && type == Type.Target)
+        {
+            transform.position += new Vector3(0.1f, 0, 0);
+            return;
+        }
+        //Get change in mouse pos
         Vector3 delta = Input.mousePosition - lastMousePos;
         delta.z = 0;
+        //If the mouse didn't move, leave
         if (delta.magnitude == 0) return;
 
+        //Get the change in WORLD SPACE from the mouse pos
         delta = cam.ScreenToWorldPoint(Input.mousePosition) - cam.ScreenToWorldPoint(lastMousePos);
 
-        if (direction == Direction.horizontal)
-        {
-            delta.y = 0;
-        }
-        else if (direction == Direction.vertical)
-        {
-            delta.x = 0;
-        }
-        if (delta.magnitude >= SpeedCap) delta = delta.normalized * SpeedCap;
+        //We only care about 1 axis
+        if      (direction == Direction.horizontal) delta.y = 0;
+        else if (direction == Direction.vertical  ) delta.x = 0;
+        //If the WORLD SPACE movement is too large of a change, cap it
+        if (delta.magnitude >= speedCap) delta = delta.normalized * speedCap;
+        //Update the last mouse pos
         lastMousePos = Input.mousePosition;
-        /*collPos += delta;
-        Vector3 moveVec = cam.ScreenToWorldPoint(collPos) + offset;
-        moveVec.z = 1;
-        Debug.Log($"1. Delta: {delta}   CollPos: {collPos}    MoveVec: {moveVec}    Pos:{pos}");*/
 
+        //Add change to pos
         pos = transform.position;
         pos += delta;
+        //Clamp it
         ClampVal(pos);
-        //ClampVal(moveVec);
-        //collPos = cam.WorldToScreenPoint(pos);
-        //Debug.Log($"2. Delta: {delta}   CollPos: {collPos}    MoveVec: {moveVec}    Pos:{pos}");
+        //Update transform
         transform.position = pos;
 
         if (!clipPlayed)
@@ -157,60 +120,47 @@ public class Block : MonoBehaviour
             clipPlayed = true;
         }
 
+        //Update cursor position to match the change made
         CollisionCursor.MoveTo(cam.WorldToScreenPoint(pos - offset));
-    }
-    public bool CallMouseDrag()
-    {
-        if (!dragging) return false;
-        //Move it
-        Vector3 moveVec = cam.ScreenToWorldPoint(CollisionCursor.Instance.collPos) + offset;
-        /*if (Vector2.Distance(moveVec, transform.position) > 0.9f)
-        {
-            moveVec -= (transform.position * 0.9f);
-            Vector3 newMousePos = cam.WorldToScreenPoint(moveVec - offset);
-            CollisionCursor.Instance.collPos = newMousePos;
-            Input.mousePosition.Set(newMousePos.x, newMousePos.y, 0);
-        }
-        else if (Vector2.Distance(moveVec, transform.position) > 0.8f)
-        {
-            moveVec = (moveVec.normalized * 0.8f) + transform.position;
-        }*/
-        pos = transform.position;
-        ClampVal(moveVec);
-        bool moved = pos == transform.position;
-        transform.position = pos;
 
-        if (!clipPlayed)
-        {
-            AudioSource.PlayClipAtPoint(moveBlockClip, cam.transform.position);
-            clipPlayed = true;
-        }
-        return moved;
+        //Check win
+        CheckWin();
     }
-    public Direction CallMouseDown()
+    /// <summary>
+    /// The new "OnMouseDown" called by the <see cref="CollisionCursor"/>
+    /// </summary>
+    public /*Direction*/void CallMouseDown()
     {
         //Reset clamps
         xClamp = new Vector2(0, XRange);
         yClamp = new Vector2(0, YRange);
+
+        //Update bools
         dragging = true;
         clipPlayed = false;
+
+        //Update scaling and grab it's current pos & offset
         StartingPos = transform.position;
-        transform.localScale = new Vector3(transform.localScale.x - sizeChange, transform.localScale.y - sizeChange, 1);
-        transform.position = new Vector3(transform.position.x + (sizeChange / 2f), transform.position.y - (sizeChange / 2f), 1);
+        transform.localScale -= new Vector3(sizeChange, sizeChange, 0);
+        transform.position += new Vector3(sizeOffset, (sizeOffset * -1), 0);
         offset = transform.position - cam.ScreenToWorldPoint(CollisionCursor.Instance.collPos);
-        return direction;
-    }
-    public void TakeControl(/*Vector3 lastMP, Vector3 cP*/)
-    {
+
+        //Set the lastMousePos
         lastMousePos = Input.mousePosition;
-        //collPos = cP;
+
+        //return direction;
     }
+    /// <summary>
+    /// The new "OnMouseUp"
+    /// </summary>
     public void CallMouseUp()
     {
+        //Change scaling back to normal
         transform.localScale = Vector3.one;//new Vector3(transform.localScale.x + sizeChange, transform.localScale.y + sizeChange, 1);
-        transform.position = new Vector3(transform.position.x - (sizeChange / 2f), transform.position.y + (sizeChange / 2f), 1);
+        transform.position -= new Vector3(sizeOffset, (sizeOffset * -1), 0);
+        
+        //Snap
         SnapToPlace();
-        CheckWin();
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -221,36 +171,28 @@ public class Block : MonoBehaviour
         //player from being able to drag the block through other blocks
         Vector2 cPos = collision.transform.position;
         Block collScript = collision.gameObject.GetComponent<Block>();
-        //int dir = 0;
-        //float val;
         if (direction == Direction.horizontal)
         {
             if(cPos.x > transform.position.x)
             {
-                //dir = 1;
-                xClamp.y = cPos.x - size + (sizeChange / 2f);
+                xClamp.y = cPos.x - size + sizeOffset;
             }
             else
             {
-                xClamp.x = cPos.x + 
-                    (collScript.direction == Direction.horizontal ? collScript.size : 1);
+                xClamp.x = cPos.x + collScript.XSize;
             }
         }
         else
         {
             if (cPos.y > transform.position.y)
             {
-                //dir = 2;
-                yClamp.x = cPos.y - 
-                    (collScript.direction == Direction.vertical ? collScript.size : 1);
+                yClamp.x = cPos.y - collScript.YSize;
             }
             else
             {
-                //dir = 3;
-                yClamp.y = cPos.y + size - (sizeChange / 2f);
+                yClamp.y = cPos.y + size - sizeOffset;
             }
         }
-        //CollisionCursor.Instance.BlockCollided(this, dir, val);
     }
     /// <summary>
     /// Called when a block has stopped being dragged. 
@@ -270,10 +212,11 @@ public class Block : MonoBehaviour
     }
     public void CheckWin()
     {
-        if (type != Type.Mystery) return;
-        if(transform.position.x >= BoardManager.Instance.Width - size)
+        if (type != Type.Target) return;
+        if(transform.position.x >= BoardManager.Instance.Width - size + 1)
         {
             BoardManager.Instance.DisplayWin();
+            Won = true;
         }
     }
 
