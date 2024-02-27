@@ -45,11 +45,7 @@ public class Block : MonoBehaviour
     /// or if the player just clicked it and never moved it.
     /// </summary>
     private Vector3 StartingPos;
-    /// <summary>
-    /// The high end of how far this block can move. For most blocks,
-    /// that is the barrier at the edge of the board. For the target block,
-    /// it's 300 because we will not have a board that is 300 wide.
-    /// </summary>
+    
     [SerializeField] AudioClip moveBlockClip;
     [SerializeField] AudioClip collideBlockClip;
     bool clipPlayed = false;
@@ -57,6 +53,11 @@ public class Block : MonoBehaviour
     private float sizeChange = 0.1f;
     private float sizeOffset;
 
+    /// <summary>
+    /// The high end of how far this block can move. For most blocks,
+    /// that is the barrier at the edge of the board. For the target block,
+    /// it's 300 because we will not have a board that is 300 wide.
+    /// </summary>
     private int XRange;
     private int YRange;
 
@@ -65,8 +66,13 @@ public class Block : MonoBehaviour
     public static bool Won = false;
     public int XSize;
     public int YSize;
+
+    private int timesMoved = 0;
+    [SerializeField] private int durability = 3;
+    private SpriteRenderer renderer;
     void Start()
     {
+        renderer = GetComponent<SpriteRenderer>();
         cam = Camera.main;
         sizeOffset = sizeChange / 2f;
         YRange = (BoardManager.Instance.Height - size) * -1;
@@ -208,7 +214,20 @@ public class Block : MonoBehaviour
         transform.position = pos;
 
         //Possible add a move to the move counter
-        if (transform.position != StartingPos) BoardManager.UpdateMoves();
+        if (transform.position != StartingPos)
+        {
+            BoardManager.UpdateMoves();
+            timesMoved++;
+            if(!damaged && timesMoved >= durability)
+            {
+                BoardManager.UpdateDamaged();
+                damaged = true;
+            }
+            if (damaged && sprites.Length >= 2)
+            {
+                renderer.sprite = sprites[1];
+            }
+        }
     }
     public void CheckWin()
     {

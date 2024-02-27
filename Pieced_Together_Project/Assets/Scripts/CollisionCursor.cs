@@ -43,9 +43,10 @@ public class CollisionCursor : MonoBehaviour
     void Update()
     {
         //Cursor.visible = false;
-        
+        Cursor.lockState = CursorLockMode.None;
+
         //Call Events
-        if(collidedBlock != null)
+        if (collidedBlock != null)
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -76,7 +77,14 @@ public class CollisionCursor : MonoBehaviour
         {
             delta.x = 0;
         }*/
+
         lastMousePos = Input.mousePosition;
+        if(lastMousePos.x > Screen.width  - 10 || lastMousePos.x <= 10 || 
+           lastMousePos.y > Screen.height - 10 || lastMousePos.y <= 10)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            lastMousePos = new Vector3(Screen.width / 2f, Screen.height / 2f);
+        }
         collPos += delta;
         Vector3 worldPos = cam.ScreenToWorldPoint(collPos);
         worldPos.z = 1;
