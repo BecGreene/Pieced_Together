@@ -27,6 +27,7 @@ public class BoardManager : MonoBehaviour
     private int Moves = 0;
     private int DamagedBoxes = 0;
     public TextMeshProUGUI MovesText;
+    public static bool Won = false;
     void Awake()
     {
         Instance = this;
@@ -61,6 +62,7 @@ public class BoardManager : MonoBehaviour
 
     public void DisplayWin()
     {
+        Won = true;
         WinText.text = $"You won in {Moves} moves!\nThis board was possible in {LowestPossibleMoves}\n";
         WinText.text += $"You got {Stars} out of 3 stars!";
         WinScreen.SetActive(true);

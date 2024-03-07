@@ -24,8 +24,18 @@ public class Block : MonoBehaviour
         Target,
         Normal
     }
+
+    public enum Barriers
+    {
+        Top,
+        Bottom,
+        Left,
+        Right,
+        None
+    }
     public Direction direction = Direction.vertical;
     public Type type = Type.Normal;
+    public Barriers barriers = Barriers.None;
     /// <summary>
     /// Has the block been damaged (fire was put next to ice, etc)
     /// </summary>
@@ -60,6 +70,8 @@ public class Block : MonoBehaviour
     /// </summary>
     private int XRange;
     private int YRange;
+    private int XRangeL;
+    private int YRangeL;
 
     private Vector3 lastMousePos;
     private readonly float speedCap = 0.5f;
@@ -69,18 +81,38 @@ public class Block : MonoBehaviour
 
     private int timesMoved = 0;
     [SerializeField] private int durability = 3;
-    private SpriteRenderer renderer;
+    private SpriteRenderer sRenderer;
+    private Vector3 winVec;
     void Start()
     {
-        renderer = GetComponent<SpriteRenderer>();
+        sRenderer = GetComponent<SpriteRenderer>();
         cam = Camera.main;
         sizeOffset = sizeChange / 2f;
-        YRange = (BoardManager.Instance.Height - size) * -1;
-        XRange = (type != Type.Target) ? BoardManager.Instance.Width - size : 300;
-        xClamp = new Vector2(0, XRange);
-        yClamp = new Vector2(0, YRange);
+        YRange  = (type == Type.Target && barriers == Barriers.Top)    ? -300 : (BoardManager.Instance.Height - size) * -1;
+        XRange  = (type == Type.Target && barriers == Barriers.Left)   ? 300 : BoardManager.Instance.Width - size;
+        XRangeL = (type == Type.Target && barriers == Barriers.Right)  ? -300 : 0;
+        YRangeL = (type == Type.Target && barriers == Barriers.Bottom) ? 300 : 0;
+        xClamp = new Vector2(XRangeL, XRange);
+        yClamp = new Vector2(YRangeL, YRange);
         XSize = direction == Direction.horizontal ? size : 1;
         YSize = direction == Direction.vertical ? size : 1;
+
+        winVec = Vector3.zero;
+        switch (barriers)
+        {
+            case Barriers.Bottom:
+                winVec = new Vector3(0, 0.1f, 0);
+                break;
+            case Barriers.Top:
+                winVec = new Vector3(0, -0.1f, 0);
+                break;
+            case Barriers.Left:
+                winVec = new Vector3(0.1f, 0, 0);
+                break;
+            case Barriers.Right:
+                winVec = new Vector3(-0.1f, 0, 0);
+                break;
+        }
     }
     /// <summary>
     /// Update is called every frame, but it will
@@ -92,7 +124,7 @@ public class Block : MonoBehaviour
         if (!dragging && (!Won || (Won && type != Type.Target))) return;
         if (Won && type == Type.Target)
         {
-            transform.position += new Vector3(0.1f, 0, 0);
+            transform.position += winVec;
             return;
         }
         //Get change in mouse pos
@@ -138,8 +170,8 @@ public class Block : MonoBehaviour
     public /*Direction*/void CallMouseDown()
     {
         //Reset clamps
-        xClamp = new Vector2(0, XRange);
-        yClamp = new Vector2(0, YRange);
+        xClamp = new Vector2(XRangeL, XRange);
+        yClamp = new Vector2(YRangeL, YRange);
 
         //Update bools
         dragging = true;
@@ -225,17 +257,43 @@ public class Block : MonoBehaviour
             }
             if (damaged && sprites.Length >= 2)
             {
-                renderer.sprite = sprites[1];
+                sRenderer.sprite = sprites[1];
             }
         }
     }
     public void CheckWin()
     {
         if (type != Type.Target) return;
-        if(transform.position.x >= BoardManager.Instance.Width - size + 1)
+        switch (barriers)
         {
-            BoardManager.Instance.DisplayWin();
-            Won = true;
+            case Barriers.Bottom:
+                if (transform.position.y >= 1)
+                {
+                    BoardManager.Instance.DisplayWin();
+                    Won = true;
+                }
+                break;
+            case Barriers.Top:
+                if (transform.position.y >= (BoardManager.Instance.Height - size + 1) * - 1)
+                {
+                    BoardManager.Instance.DisplayWin();
+                    Won = true;
+                }
+                break;
+            case Barriers.Left:
+                if (transform.position.x >= BoardManager.Instance.Width - size + 1)
+                {
+                    BoardManager.Instance.DisplayWin();
+                    Won = true;
+                }
+                break;
+            case Barriers.Right:
+                if (transform.position.x <= 0)
+                {
+                    BoardManager.Instance.DisplayWin();
+                    Won = true;
+                }
+                break;
         }
     }
 
