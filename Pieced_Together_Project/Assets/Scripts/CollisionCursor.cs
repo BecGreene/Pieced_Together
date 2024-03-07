@@ -1,14 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class CollisionCursor : MonoBehaviour
 {
-    [DllImport("user32.dll")]
-    static extern bool GetCursorPos(out int X, out int Y);
-    [DllImport("user32.dll")]
-    static extern bool SetCursorPos(int X, int Y);
     private Vector3 lastMousePos;
     public Vector3 collPos;
     private Camera cam;
@@ -24,8 +17,6 @@ public class CollisionCursor : MonoBehaviour
     //private int SpeedCap = 25;
     //private Block.Direction direction = Block.Direction.none;
     private bool dragging = false;
-    private bool performedWin = false;
-    private bool performedWin2 = false;
     public static bool InUI = false;
     private bool performedUI = false;
     private bool performedUI2 = false;
@@ -48,6 +39,10 @@ public class CollisionCursor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (BoardManager.Won)
+        {
+            InUI = true;
+        }
         if (InUI)
         {
             if (!performedUI)
@@ -61,22 +56,6 @@ public class CollisionCursor : MonoBehaviour
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
                 performedUI2 = true;
-            }
-            return;
-        }
-        if (BoardManager.Won)
-        {
-            if (!performedWin)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                performedWin = true;
-                return;
-            }
-            if (!performedWin2)
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-                performedWin2 = true;
             }
             return;
         }

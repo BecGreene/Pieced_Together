@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
 
 public class BoardManager : MonoBehaviour
@@ -19,6 +21,7 @@ public class BoardManager : MonoBehaviour
     private int Stars = 3;
     public static BoardManager Instance;
 
+    public Sprite[] Clipboards;
     //I was being lazy with these two variables. There
     //is probably a better way to do this, just didn't
     //feel like doing that
@@ -28,9 +31,14 @@ public class BoardManager : MonoBehaviour
     private int DamagedBoxes = 0;
     public TextMeshProUGUI MovesText;
     public static bool Won = false;
+    private Image clipboard;
+    private Button nextLevel;
     void Awake()
     {
         Instance = this;
+        nextLevel = WinScreen.transform.GetChild(2).GetComponent<Button>();
+        clipboard = WinScreen.transform.GetChild(0).GetComponent<Image>();
+        nextLevel.onClick.AddListener(SceneTransitions.LoadNextLevel);
     }
     public static void UpdateMoves() => Instance.UpdateMoves_P();
     private void UpdateMoves_P()
@@ -48,7 +56,7 @@ public class BoardManager : MonoBehaviour
         {
             if (Stars >= 3) Stars--;
         }
-        MovesText.text = $"Moves: {Instance.Moves}\n{Stars} out of 3 stars";
+        MovesText.text = $"Moves: {Instance.Moves}";//\n{Stars} out of 3 stars";
     }
     public static void UpdateDamaged() => Instance.UpdateDamaged_P();
     private void UpdateDamaged_P()
@@ -63,8 +71,22 @@ public class BoardManager : MonoBehaviour
     public void DisplayWin()
     {
         Won = true;
-        WinText.text = $"You won in {Moves} moves!\nThis board was possible in {LowestPossibleMoves}\n";
-        WinText.text += $"You got {Stars} out of 3 stars!";
+        //WinText.text = $"You won in {Moves} moves!\nThis board was possible in {LowestPossibleMoves}\n";
+        //WinText.text += $"You got {Stars} out of 3 stars!";
+        WinText.text = Moves.ToString();
         WinScreen.SetActive(true);
+        StartCoroutine(WinAnimation());
+    }
+    private IEnumerator WinAnimation()
+    {
+        if (Stars >= 1) yield return new WaitForSecondsRealtime(0.5f);
+        clipboard.sprite = Clipboards[1];
+        if (Stars >= 2) yield return new WaitForSecondsRealtime(1f);
+        clipboard.sprite = Clipboards[2];
+        if (Stars >= 3) yield return new WaitForSecondsRealtime(1.25f);
+        clipboard.sprite = Clipboards[3];
+        yield return new WaitForSecondsRealtime(0.75f);
+        if (SceneTransitions.nextLevelExists) nextLevel.gameObject.SetActive(true);
+        StopCoroutine(WinAnimation());
     }
 }
