@@ -32,6 +32,7 @@ public class SceneTransitions : MonoBehaviour
         if(scene >= SceneManager.sceneCount)
         {
             nextLevelExists = false;
+            scene = 0;
         }
     }
 }
