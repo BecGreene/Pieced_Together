@@ -442,6 +442,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1234772378269825931, guid: 434592382a9f8184696e56a70c300e92, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3165458123439459749, guid: 434592382a9f8184696e56a70c300e92, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -3138,11 +3142,11 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: d659d06335daeef4581be656dfd64009, type: 3}
     - target: {fileID: 4119572616328881648, guid: f4c497fc10b03c04da654cc181fadad1, type: 3}
       propertyPath: m_Color.b
-      value: 0
+      value: 0.29000002
       objectReference: {fileID: 0}
     - target: {fileID: 4119572616328881648, guid: f4c497fc10b03c04da654cc181fadad1, type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 0.29000002
       objectReference: {fileID: 0}
     - target: {fileID: 4119572616328881648, guid: f4c497fc10b03c04da654cc181fadad1, type: 3}
       propertyPath: m_Color.r
@@ -3295,6 +3299,7 @@ CanvasRenderer:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 552401239}
   - {fileID: 1794686810}
   - {fileID: 1212226709}
   - {fileID: 1541528360}
@@ -3302,16 +3307,15 @@ SceneRoots:
   - {fileID: 934409775}
   - {fileID: 1450395213}
   - {fileID: 1375364066}
-  - {fileID: 552401239}
-  - {fileID: 613461558}
-  - {fileID: 1100350652}
   - {fileID: 602212587}
   - {fileID: 574422360}
   - {fileID: 581438866}
   - {fileID: 312340412}
   - {fileID: 1843453727}
   - {fileID: 678503972}
+  - {fileID: 1976043032}
+  - {fileID: 1100350652}
+  - {fileID: 613461558}
   - {fileID: 719912955}
   - {fileID: 1747342648}
   - {fileID: 44201774}
-  - {fileID: 1976043032}

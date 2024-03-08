@@ -79,12 +79,21 @@ public class BoardManager : MonoBehaviour
     }
     private IEnumerator WinAnimation()
     {
-        if (Stars >= 1) yield return new WaitForSecondsRealtime(0.5f);
-        clipboard.sprite = Clipboards[1];
-        if (Stars >= 2) yield return new WaitForSecondsRealtime(1f);
-        clipboard.sprite = Clipboards[2];
-        if (Stars >= 3) yield return new WaitForSecondsRealtime(1.25f);
-        clipboard.sprite = Clipboards[3];
+        if (Stars >= 1)
+        {
+            yield return new WaitForSecondsRealtime(0.5f);
+            clipboard.sprite = Clipboards[1];
+        }
+        if (Stars >= 2)
+        {
+            yield return new WaitForSecondsRealtime(1f);
+            clipboard.sprite = Clipboards[2];
+        }
+        if (Stars >= 3)
+        {
+            yield return new WaitForSecondsRealtime(1.25f);
+            clipboard.sprite = Clipboards[3];
+        }
         yield return new WaitForSecondsRealtime(0.75f);
         if (SceneTransitions.nextLevelExists) nextLevel.gameObject.SetActive(true);
         StopCoroutine(WinAnimation());
