@@ -520,7 +520,7 @@ PrefabInstance:
       objectReference: {fileID: 1744411506}
     - target: {fileID: 7007714956371055082, guid: 434592382a9f8184696e56a70c300e92, type: 3}
       propertyPath: OneStarMoveCap
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7007714956371055082, guid: 434592382a9f8184696e56a70c300e92, type: 3}
       propertyPath: TwoStarMoveCap
@@ -528,7 +528,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7007714956371055082, guid: 434592382a9f8184696e56a70c300e92, type: 3}
       propertyPath: ThreeStarMoveCap
-      value: 10
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7007714956371055082, guid: 434592382a9f8184696e56a70c300e92, type: 3}
       propertyPath: LowestPossibleMoves
