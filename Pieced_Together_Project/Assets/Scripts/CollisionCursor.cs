@@ -135,6 +135,18 @@ public class CollisionCursor : MonoBehaviour
             collidedScript = null;
         }
     }
+    private void OnCollisionStay(Collision collision)
+    {
+        if (!collision.gameObject.CompareTag("Block") || dragging || !Input.GetMouseButton(0) || Block.Won) return;
+        if (sRenderer.sprite == CursorImages[2] || sRenderer.sprite == CursorImages[3]) return;
+        //if (collidedBlock != null && collidedBlock == collision.gameObject) return;
+        if (collidedBlock == null || collidedBlock != collision.gameObject)
+        {
+            collidedBlock = collision.gameObject;
+            collidedScript = collidedBlock.GetComponent<Block>();
+        }
+        sRenderer.sprite = CursorImages[collidedScript.direction == Block.Direction.horizontal ? 2 : 3];
+    }
     public static void MoveTo(Vector3 pos) => Instance.MoveTo_P(pos);
     private void MoveTo_P(Vector3 pos)
     {

@@ -73,6 +73,9 @@ public class Block : MonoBehaviour
     private int XRangeL;
     private int YRangeL;
 
+    private float initX;
+    private float initY;
+
     private Vector3 lastMousePos;
     private readonly float speedCap = 0.5f;
     public static bool Won = false;
@@ -87,7 +90,9 @@ public class Block : MonoBehaviour
     {
         sRenderer = GetComponent<SpriteRenderer>();
         cam = Camera.main;
-        sizeOffset = sizeChange / 2f;
+        sizeOffset = sizeChange * (1/2f);
+        initX = transform.position.x;
+        initY = transform.position.y;
         YRange  = (type == Type.Target && barriers == Barriers.Top)    ? -300 : (BoardManager.Instance.Height - size) * -1;
         XRange  = (type == Type.Target && barriers == Barriers.Left)   ? 300 : BoardManager.Instance.Width - size;
         XRangeL = (type == Type.Target && barriers == Barriers.Right)  ? -300 : 0;
@@ -121,6 +126,11 @@ public class Block : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        /*if (!dragging && !Won)
+        {
+            SnapToPlace();
+            return;
+        }*/
         if (!dragging && (!Won || (Won && type != Type.Target))) return;
         if (Won && type == Type.Target)
         {
@@ -170,8 +180,8 @@ public class Block : MonoBehaviour
     public /*Direction*/void CallMouseDown()
     {
         //Reset clamps
-        xClamp = new Vector2(XRangeL, XRange);
-        yClamp = new Vector2(YRangeL, YRange);
+        xClamp = new Vector2(XRangeL, XRange + (sizeOffset * (5 / 3f)));
+        yClamp = new Vector2(YRangeL, YRange - (sizeOffset * (5 / 3f)));
 
         //Update bools
         dragging = true;
@@ -199,6 +209,7 @@ public class Block : MonoBehaviour
         
         //Snap
         SnapToPlace();
+        AddMove();
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -242,9 +253,11 @@ public class Block : MonoBehaviour
         pos = transform.position;
         //Round all vals so that they snap to the "grid". Then, make sure
         //The rounded position is in range
-        ClampVal(new Vector2((int)Math.Round(pos.x), (int)Math.Round(pos.y)));
+        ClampValPerfect(new Vector2((int)Math.Round(pos.x), (int)Math.Round(pos.y)));
         transform.position = pos;
-
+    }
+    private void AddMove()
+    {
         //Possible add a move to the move counter
         if (transform.position != StartingPos)
         {
@@ -307,6 +320,15 @@ public class Block : MonoBehaviour
             case Direction.vertical:
                 pos.y = Mathf.Clamp(val.y, yClamp.y, yClamp.x);
                 break;
+        }
+    }
+    private void ClampValPerfect(Vector2 val)
+    {
+        ClampVal(val);
+        switch (direction)
+        {
+            case Direction.horizontal: pos.y = initY; break;
+            case Direction.vertical  : pos.x = initX; break;
         }
     }
 }
