@@ -1,42 +1,52 @@
-using System.Collections;
-using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
-    public static bool GameIsPaused = false;
+    public bool GameIsPaused = false;
+    private Image bg;
+    private GameObject buttons;
+    private Transform btns;
+    private GameObject header;
+    private void Awake()
+    {
+        //Get references to toggle visibility
+        bg = GetComponent<Image>();
+        header = transform.GetChild(0).gameObject;
+        btns = transform.GetChild(1);
+        buttons = btns.gameObject;
+        HideOrShow();
 
-    public GameObject PauseMenuUI;
-    // Update is called once per frame
+        //Set button functions
+        btns.GetChild(0).GetComponent<Button>().onClick.AddListener(Resume);
+        btns.GetChild(1).GetComponent<Button>().onClick.AddListener(Restart);
+        btns.GetChild(2).GetComponent<Button>().onClick.AddListener(MainMenu);
+        btns.GetChild(3).GetComponent<Button>().onClick.AddListener(Quit);
+    }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            {
-            if (GameIsPaused)
-            {
-                Resume();
-            }else
-            {
-                Pause();
-            }
+        {
+            HideOrShow(!GameIsPaused);
         }
-       
-        
     }
 
-    public void Resume() 
+    private void HideOrShow(bool show = false)
     {
-        PauseMenuUI.SetActive(false);
-        CollisionCursor.InUI = false;
-        //Time.timeScale = 1f;
-        GameIsPaused = false; 
+        bg.enabled = show;
+        header.SetActive(show);
+        buttons.SetActive(show);
+        CollisionCursor.InUI = show;
+        GameIsPaused = show;
     }
 
-    public void Pause()
+    private void Restart() => SceneTransitions.RestartLevel();
+    private void Resume() => HideOrShow();
+    private void MainMenu() => SceneTransitions.MainMenu();
+    private void Quit()
     {
-        PauseMenuUI.SetActive(true);
-        CollisionCursor.InUI = true;
-        //Time.timeScale = 0f;
-        GameIsPaused =true;
+        Application.Quit();
+        EditorApplication.ExitPlaymode();
     }
 }

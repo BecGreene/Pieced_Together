@@ -39,6 +39,7 @@ public class BoardManager : MonoBehaviour
         nextLevel = WinScreen.transform.GetChild(2).GetComponent<Button>();
         clipboard = WinScreen.transform.GetChild(0).GetComponent<Image>();
         nextLevel.onClick.AddListener(SceneTransitions.LoadNextLevel);
+        nextLevel.gameObject.SetActive(false);
     }
     public static void UpdateMoves() => Instance.UpdateMoves_P();
     private void UpdateMoves_P()

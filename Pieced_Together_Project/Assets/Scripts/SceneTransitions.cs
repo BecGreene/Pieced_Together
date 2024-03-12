@@ -35,4 +35,13 @@ public class SceneTransitions : MonoBehaviour
             scene = 0;
         }
     }
+    public static void RestartLevel()
+    {
+        scene--;
+        LoadNextLevel();
+    }
+    public static void MainMenu()
+    {
+
+    }
 }

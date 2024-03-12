@@ -250,7 +250,7 @@ public class Block : MonoBehaviour
         {
             BoardManager.UpdateMoves();
             timesMoved++;
-            if(!damaged && timesMoved >= durability)
+            /*if(!damaged && timesMoved >= durability)
             {
                 BoardManager.UpdateDamaged();
                 damaged = true;
@@ -258,7 +258,7 @@ public class Block : MonoBehaviour
             if (damaged && sprites.Length >= 2)
             {
                 sRenderer.sprite = sprites[1];
-            }
+            }*/
         }
     }
     public void CheckWin()

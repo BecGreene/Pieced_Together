@@ -49,6 +49,7 @@ public class CollisionCursor : MonoBehaviour
             {
                 Cursor.lockState = CursorLockMode.Locked;
                 performedUI = true;
+                performedUI2 = false;
                 return;
             }
             if (!performedUI2)
@@ -59,6 +60,7 @@ public class CollisionCursor : MonoBehaviour
             }
             return;
         }
+        performedUI = performedUI2 = false;
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = false;
@@ -99,7 +101,7 @@ public class CollisionCursor : MonoBehaviour
         }*/
 
         lastMousePos = Input.mousePosition;
-        if(!BoardManager.Won &&
+        if(!InUI &&
            (lastMousePos.x > Screen.width  - 10 || lastMousePos.x <= 10 || 
             lastMousePos.y > Screen.height - 10 || lastMousePos.y <= 10))
         {
