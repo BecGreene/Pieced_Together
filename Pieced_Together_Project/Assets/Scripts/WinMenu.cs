@@ -20,8 +20,13 @@ public class WinMenu : MonoBehaviour
         "Are you kidding me? You could've done this in |!\n<color=\"red\"><align=\"center\"> Paycut.",
         "What a great job. Could've done it in |, but you do you...",
         "Why did I even hire you?\nNext time do it in |.",
-        "Jesus Christ, Jerry, get it together! What were you thinking!\nGet this done in | next time, or else you're demoted."
+        "Jesus Christ, Jerry, get it together! What were you thinking!\nGet this done in | next time, or else you're demoted.",
+        "Jerry... You sure are <i>special</i>.\nGet it through your head, |.",
+        "Friendly reminder, our customers don't like broken boxes. Getting | protects the boxes :)",
+        "That was surprisingly efficient.\nFor a worker of you abilities.\nAny normal worker would've gotten it in |, but good on you!",
+        "We are on a deadline, but I guess you have nowhere to be...\nI'll contact upper management and tell them we failed to reach |, it's <i>no</i> problem."
     };
+    string comment;
     private void Awake()
     {
         Instance = this;
@@ -33,16 +38,23 @@ public class WinMenu : MonoBehaviour
         nextLevel.gameObject.SetActive(false);
         redoLevel.onClick.AddListener(SceneTransitions.RestartLevel);
         redoLevel.gameObject.SetActive(false);
+        
     }
     public void ShowWin(int stars)
     {
         Stars = stars;
+        comment = comments[Random.Range(0, comments.Count)].Replace("|", $"<b>{BoardManager.Instance.LowestPossibleMoves}</b> moves");
         StartCoroutine(WinAnimation());
     }
     private void Update()
     {
         if (!won) return;
-        if (Input.GetKeyDown(KeyCode.Space) && won) fastForward = true;
+        if (Input.GetKeyDown(KeyCode.Space) && won)
+        {
+            fastForward = true;
+            StopCoroutine(WinAnimation());
+            StartCoroutine(WinAnimation());
+        }
     }
     private IEnumerator WinAnimation()
     {
@@ -65,7 +77,7 @@ public class WinMenu : MonoBehaviour
         if(Stars < 3)
         {
             sassyComments.SetActive(true);
-            sassyComments.GetComponentInChildren<TextMeshProUGUI>().text = comments[Random.Range(0, comments.Count)].Replace("|", $"<b>{BoardManager.Instance.LowestPossibleMoves}</b> moves");
+            sassyComments.GetComponentInChildren<TextMeshProUGUI>().text = comment;
         }
         yield return new WaitForSecondsRealtime(fastForward ? 0f : 0.75f);
         if (SceneTransitions.nextLevelExists) nextLevel.gameObject.SetActive(true);

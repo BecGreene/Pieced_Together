@@ -30,6 +30,10 @@ public class PauseMenu : MonoBehaviour
         {
             HideOrShow(!GameIsPaused);
         }
+        if (Input.GetKey(KeyCode.R))
+        {
+            SceneTransitions.RestartLevel();
+        }
     }
 
     private void HideOrShow(bool show = false)
