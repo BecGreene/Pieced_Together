@@ -17,14 +17,21 @@ public class WinMenu : MonoBehaviour
     private bool fastForward = false;
     private List<string> comments = new List<string>()
     {
-        "Are you kidding me? You could've done this in |!\n<color=\"red\"><align=\"center\"> Paycut.",
+        "Jerry... You sure are <i>special</i>.\nGet it through your head, |.",
+        "Are you kidding me? You could've done this in |!\n<color=\"red\"><align=\"center\"><b>Paycut.",
         "What a great job. Could've done it in |, but you do you...",
         "Why did I even hire you?\nNext time do it in |.",
-        "Jesus Christ, Jerry, get it together! What were you thinking!\nGet this done in | next time, or else you're demoted.",
-        "Jerry... You sure are <i>special</i>.\nGet it through your head, |.",
+        "Jesus Christ, Jerry, get it together! What were you thinking!\nGet this done in | next time, or else you're \n<color=\"red\"><align=\"center\"><b>demoted.",
         "Friendly reminder, our customers don't like broken boxes. Getting | protects the boxes :)",
         "That was surprisingly efficient.\nFor a worker of you abilities.\nAny normal worker would've gotten it in |, but good on you!",
-        "We are on a deadline, but I guess you have nowhere to be...\nI'll contact upper management and tell them we failed to reach |, it's <i>no</i> problem."
+        "We are on a deadline, but I guess you have nowhere to be...\nI'll contact upper management and tell them we failed to reach |, it's <i>no</i> problem.",
+        "<align=\"center\">I'm not mad\n<align=\"left\">It's not <i>your</i> fault you didn't get |, that's just impossible, isn't it?",
+        "You're so lucky Sharon likes you, or else you'd be fired on the spot. You only needed |.",
+        "Correct me if I'm wrong, but you are <i>paid</i> to do this, right? How are you missing |?",
+        "???\nWtf did you even do?\nYou only needed |.",
+        "Just to be sure we're on the same page, you do know we want to move the boxes as little as possible? As in, |?",
+        "Don't be surprised when Kevin gets promoted before you. He got |. It's not an insult, just a fact.",
+        "Do we even know what's in that red box? It seems to glow sometimes. Don't move things too much, just |.\n<size=18><i>Please..."
     };
     string comment;
     private void Awake()
@@ -43,7 +50,7 @@ public class WinMenu : MonoBehaviour
     public void ShowWin(int stars)
     {
         Stars = stars;
-        comment = comments[Random.Range(0, comments.Count)].Replace("|", $"<b>{BoardManager.Instance.LowestPossibleMoves}</b> moves");
+        comment = comments[Random.Range(0, comments.Count)].Replace("|", $"<b>{BoardManager.Instance.LowestPossibleMoves}</b> move{(BoardManager.Instance.LowestPossibleMoves > 1 ? "s" : "")}");
         StartCoroutine(WinAnimation());
     }
     private void Update()
