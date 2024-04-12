@@ -68,7 +68,7 @@ public class BoardManager : MonoBehaviour
         Won = true;
         //WinText.text = $"You won in {Moves} moves!\nThis board was possible in {LowestPossibleMoves}\n";
         //WinText.text += $"You got {Stars} out of 3 stars!";
-        WinText.text = Moves.ToString();
+        WinText.text = (Moves + 1).ToString();
         WinScreen.SetActive(true);
         WinMenu.Instance.ShowWin(Stars);
     }

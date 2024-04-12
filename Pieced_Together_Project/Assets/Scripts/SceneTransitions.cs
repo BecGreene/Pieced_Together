@@ -41,6 +41,15 @@ public class SceneTransitions : MonoBehaviour
         SceneManager.LoadScene(scene);
         CheckNextLevel();
     }
+    public static void LoadNumLevel(int num)
+    {
+        scene = num;
+        Block.Won = false;
+        BoardManager.Won = false;
+        CollisionCursor.InUI = false;
+        SceneManager.LoadScene(scene);
+        CheckNextLevel();
+    }
     public static void RestartLevel()
     {
         if(scene == 1)
