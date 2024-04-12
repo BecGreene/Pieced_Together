@@ -17,7 +17,7 @@ public class WinMenu : MonoBehaviour
     private bool fastForward = false;
     private List<string> comments = new List<string>()
     {
-        "Jerry... You sure are <i>special</i>.\nGet it through your head, |.",
+        "Jerry... It's |. This is going on your performance review.",
         "Are you kidding me? You could've done this in |!\n<color=\"red\"><align=\"center\"><b>Paycut.",
         "What a great job. Could've done it in |, but you do you...",
         "Why did I even hire you?\nNext time do it in |.",
@@ -56,7 +56,7 @@ public class WinMenu : MonoBehaviour
     private void Update()
     {
         if (!won) return;
-        if (Input.GetKeyDown(KeyCode.Space) && won)
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(1)) && won)
         {
             fastForward = true;
             StopCoroutine(WinAnimation());
