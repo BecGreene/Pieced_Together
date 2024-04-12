@@ -118,6 +118,7 @@ public class CollisionCursor : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!collision.gameObject.CompareTag("Block") || dragging || Block.Won) return;
+        if (collision.gameObject.GetComponent<Block>().disabled) return;
         collidedBlock = collision.gameObject;
         collidedScript = collidedBlock.GetComponent<Block>();
         sRenderer.sprite = CursorImages[collidedScript.direction == Block.Direction.horizontal ? 2 : 3];

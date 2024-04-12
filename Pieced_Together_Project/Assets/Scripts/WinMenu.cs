@@ -15,6 +15,13 @@ public class WinMenu : MonoBehaviour
     public static WinMenu Instance;
     private bool won = false;
     private bool fastForward = false;
+    private List<string> comments = new List<string>()
+    {
+        "Are you kidding me? You could've done this in |!\n<color=\"red\"><align=\"center\"> Paycut.",
+        "What a great job. Could've done it in |, but you do you...",
+        "Why did I even hire you?\nNext time do it in |.",
+        "Jesus Christ, Jerry, get it together! What were you thinking!\nGet this done in | next time, or else you're demoted."
+    };
     private void Awake()
     {
         Instance = this;
@@ -58,8 +65,7 @@ public class WinMenu : MonoBehaviour
         if(Stars < 3)
         {
             sassyComments.SetActive(true);
-            sassyComments.GetComponentInChildren<TextMeshProUGUI>().text =
-                $"Are you kidding me? You could've done this in {BoardManager.Instance.LowestPossibleMoves} moves!\n<color=\"red\"><align=\"center\"> Paycut.";
+            sassyComments.GetComponentInChildren<TextMeshProUGUI>().text = comments[Random.Range(0, comments.Count)].Replace("|", $"<b>{BoardManager.Instance.LowestPossibleMoves}</b> moves");
         }
         yield return new WaitForSecondsRealtime(fastForward ? 0f : 0.75f);
         if (SceneTransitions.nextLevelExists) nextLevel.gameObject.SetActive(true);

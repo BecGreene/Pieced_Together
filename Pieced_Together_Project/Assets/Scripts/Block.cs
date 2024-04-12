@@ -22,7 +22,8 @@ public class Block : MonoBehaviour
     public enum Type
     {
         Target,
-        Normal
+        Normal,
+        Fragile
     }
 
     public enum Barriers
@@ -86,6 +87,7 @@ public class Block : MonoBehaviour
     [SerializeField] private int durability = 3;
     private SpriteRenderer sRenderer;
     private Vector3 winVec;
+    public bool disabled = false;
     void Start()
     {
         sRenderer = GetComponent<SpriteRenderer>();
@@ -263,6 +265,11 @@ public class Block : MonoBehaviour
         {
             BoardManager.UpdateMoves();
             timesMoved++;
+            if(type == Type.Fragile && timesMoved >= 2)
+            {
+                disabled = true;
+                sRenderer.color = new Color(0.5f, 0.5f, 0.5f, 1);
+            }
             /*if(!damaged && timesMoved >= durability)
             {
                 BoardManager.UpdateDamaged();
