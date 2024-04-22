@@ -9,7 +9,7 @@ public class SceneTransitions : MonoBehaviour
     static int scene = 3;
     public static SceneTransitions Instance;
     public static bool nextLevelExists = true;
-    public static bool[] unlockedLevels = new bool[6];
+    public static bool[] unlockedLevels = new bool[7];
     // Start is called before the first frame update
     void Awake()
     {
