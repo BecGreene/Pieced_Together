@@ -28,7 +28,7 @@ public class SceneTransitions : MonoBehaviour
         scene = _scene.buildIndex;
         if(scene == 0)
         {
-            scene = 2;
+            scene = 3;
         }
         Block.Won = false;
         BoardManager.Won = false;
