@@ -1,18 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ST = SceneTransitions;
 
 public class LevelSelect : MonoBehaviour
 {
+    private Button GetButton(int i) => transform.GetChild(i).GetComponent<Button>();
+    private void LoadButton(int i)
+    {
+        GetButton(i).onClick.AddListener(delegate { ST.LoadNumLevel(i + 3); });
+        GetButton(i).interactable = ST.unlockedLevels[i];
+    }
     private void Start()
     {
-        transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate { SceneTransitions.LoadNumLevel(1); });
-        transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate { SceneTransitions.LoadNumLevel(2); });
-        transform.GetChild(2).GetComponent<Button>().onClick.AddListener(delegate { SceneTransitions.LoadNumLevel(3); });
-        transform.GetChild(3).GetComponent<Button>().onClick.AddListener(delegate { SceneTransitions.LoadNumLevel(4); });
-        transform.GetChild(4).GetComponent<Button>().onClick.AddListener(delegate { SceneTransitions.LoadNumLevel(5); });
+        for(int i = 0; i < 5; ++i)
+        {
+            LoadButton(i);
+        }
+        //GetButton(5).interactable = ST.unlockedLevels[5];
         //transform.GetChild(5).GetComponent<Button>().onClick.AddListener(delegate { SceneTransitions.LoadNumLevel(1); });
-        transform.GetChild(6).GetComponent<Button>().onClick.AddListener(SceneTransitions.MainMenu);
+        GetButton(6).onClick.AddListener(ST.MainMenu);
     }
 }

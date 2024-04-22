@@ -6,9 +6,10 @@ using UnityEngine;
 public class SceneTransitions : MonoBehaviour
 {
     Scene _scene;
-    static int scene = 1;
+    static int scene = 3;
     public static SceneTransitions Instance;
     public static bool nextLevelExists = true;
+    public static bool[] unlockedLevels = new bool[6];
     // Start is called before the first frame update
     void Awake()
     {
@@ -22,8 +23,13 @@ public class SceneTransitions : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        unlockedLevels[0] = true;
         _scene = SceneManager.GetActiveScene();
         scene = _scene.buildIndex;
+        if(scene == 0)
+        {
+            scene = 2;
+        }
         Block.Won = false;
         BoardManager.Won = false;
         CollisionCursor.InUI = false;
@@ -38,6 +44,10 @@ public class SceneTransitions : MonoBehaviour
         Block.Won = false;
         BoardManager.Won = false;
         CollisionCursor.InUI = false;
+        if(scene >= 4)
+        {
+            unlockedLevels[scene - 3] = true;
+        }
         SceneManager.LoadScene(scene);
         CheckNextLevel();
     }

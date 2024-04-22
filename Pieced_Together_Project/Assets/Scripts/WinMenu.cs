@@ -10,12 +10,13 @@ public class WinMenu : MonoBehaviour
     private Button nextLevel;
     private Button redoLevel;
     private GameObject sassyComments;
+    private GameObject goodComments;
     public Sprite[] Clipboards;
     private int Stars;
     public static WinMenu Instance;
     private bool won = false;
     private bool fastForward = false;
-    private List<string> comments = new List<string>()
+    private List<string> comments_bad = new List<string>()
     {
         "Jerry... It's |. This is going on your performance review.",
         "Are you kidding me? You could've done this in |!\n<color=\"red\"><align=\"center\"><b>Paycut.",
@@ -33,7 +34,14 @@ public class WinMenu : MonoBehaviour
         "Don't be surprised when Kevin gets promoted before you. He got |. It's not an insult, just a fact.",
         "Do we even know what's in that red box? It seems to glow sometimes. Don't move things too much, just |.\n<size=18><i>Please..."
     };
-    string comment;
+    private List<string> comments_good = new List<string>()
+    {
+        "Nice one! You truely are at the top of the bell curve.",
+        "Good one, Jerry. If only you were this efficient all the time.",
+        "Do we even know what's in that red box? It seems to glow sometimes. Don't move things too much, just |.\n<size=18><i>Please..."
+    };
+    string comment_bad;
+    string comment_good;
     private void Awake()
     {
         Instance = this;
@@ -41,6 +49,7 @@ public class WinMenu : MonoBehaviour
         redoLevel = transform.GetChild(3).GetComponent<Button>();
         clipboard = transform.GetChild(0).GetComponent<Image>();
         sassyComments = transform.GetChild(4).gameObject;
+        goodComments  = transform.GetChild(5).gameObject;
         nextLevel.onClick.AddListener(SceneTransitions.LoadNextLevel);
         nextLevel.gameObject.SetActive(false);
         redoLevel.onClick.AddListener(SceneTransitions.RestartLevel);
@@ -50,7 +59,8 @@ public class WinMenu : MonoBehaviour
     public void ShowWin(int stars)
     {
         Stars = stars;
-        comment = comments[Random.Range(0, comments.Count)].Replace("|", $"<b>{BoardManager.Instance.LowestPossibleMoves}</b> move{(BoardManager.Instance.LowestPossibleMoves > 1 ? "s" : "")}");
+        comment_bad  = comments_bad [Random.Range(0, comments_bad .Count)].Replace("|", $"<b>{BoardManager.Instance.LowestPossibleMoves}</b> move{(BoardManager.Instance.LowestPossibleMoves > 1 ? "s" : "")}");
+        comment_good = comments_good[Random.Range(0, comments_good.Count)].Replace("|", $"<b>{BoardManager.Instance.LowestPossibleMoves}</b> move{(BoardManager.Instance.LowestPossibleMoves > 1 ? "s" : "")}");
         StartCoroutine(WinAnimation());
     }
     private void Update()
@@ -81,12 +91,17 @@ public class WinMenu : MonoBehaviour
             yield return new WaitForSecondsRealtime(fastForward ? 0f : 1.25f);
             clipboard.sprite = Clipboards[3];
         }
+        yield return new WaitForSecondsRealtime(fastForward ? 0f : 0.75f);
         if(Stars < 3)
         {
             sassyComments.SetActive(true);
-            sassyComments.GetComponentInChildren<TextMeshProUGUI>().text = comment;
+            sassyComments.GetComponentInChildren<TextMeshProUGUI>().text = comment_bad;
         }
-        yield return new WaitForSecondsRealtime(fastForward ? 0f : 0.75f);
+        else
+        {
+            goodComments.SetActive(true);
+            goodComments.GetComponentInChildren<TextMeshProUGUI>().text = comment_good;
+        }
         if (SceneTransitions.nextLevelExists) nextLevel.gameObject.SetActive(true);
         redoLevel.gameObject.SetActive(true);
         StopCoroutine(WinAnimation());
