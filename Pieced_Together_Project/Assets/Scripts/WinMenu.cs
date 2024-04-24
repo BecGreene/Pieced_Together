@@ -37,7 +37,18 @@ public class WinMenu : MonoBehaviour
     {
         "Nice one! You truely are at the top of the bell curve.",
         "Good one, Jerry. If only you were this efficient all the time.",
-        "Do we even know what's in that red box? It seems to glow sometimes. Don't move things too much, just |.\n<size=18><i>Please..."
+        "Keep this up and you might get a promotion!\n<size=18>In 10 years",
+        "Who knew you were capable of success.",
+        "Impressive. Though Kevin got | in half the time it took you...",
+        "Damn it Jerry, now I can't give you a paycut! We were so close!",
+        "Stop trying to impress Sharon, it's not happening.",
+        "Nice! Next time how about we go a little faster, hm? :)",
+        "This still doesn't make you eligable for that bonus. Nice try, though.",
+        "I <i>guess</i> we can strike <b>one</b> shortcoming from the record...",
+        "Okay, now you're just <i>copying</i> Kevin. Do good without leeching off him!",
+        "You're lucky the red box isn't labeled fragile. Might be the only reason you're competent at your job.",
+        "I don't know why I have to praise you for doing the bare minmum, but it's required.\n<b><i><color=\"green\"><align=\"center\">Yay, you did it"//,
+        //"Do we even know what's in that red box? It seems to glow sometimes. Don't move things too much, just |.\n<size=18><i>Please..."
     };
     string comment_bad;
     string comment_good;
