@@ -7,12 +7,12 @@ public class LevelSelect : MonoBehaviour
     private Button GetButton(int i) => transform.GetChild(i).GetComponent<Button>();
     private void LoadButton(int i)
     {
-        GetButton(i).onClick.AddListener(delegate { ST.LoadNumLevel(i + 3); });
+        GetButton(i).onClick.AddListener(delegate { ST.LoadNumLevel(i + 4); });
         GetButton(i).interactable = ST.unlockedLevels[i];
     }
     private void Start()
     {
-        for(int i = 0; i < 5; ++i)
+        for(int i = 0; i < 6; ++i)
         {
             LoadButton(i);
         }
