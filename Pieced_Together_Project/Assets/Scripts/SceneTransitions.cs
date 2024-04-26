@@ -24,6 +24,12 @@ public class SceneTransitions : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         unlockedLevels[0] = true;
+        unlockedLevels[1] = true;
+        unlockedLevels[2] = true;
+        unlockedLevels[3] = true;
+        unlockedLevels[4] = true;
+        unlockedLevels[5] = true;
+        unlockedLevels[6] = true;
         _scene = SceneManager.GetActiveScene();
         scene = _scene.buildIndex;
         if(scene == 0)
@@ -46,7 +52,7 @@ public class SceneTransitions : MonoBehaviour
         CollisionCursor.InUI = false;
         if(scene >= 4)
         {
-            unlockedLevels[scene - 3] = true;
+            //unlockedLevels[scene - 3] = true;
         }
         SceneManager.LoadScene(scene);
         CheckNextLevel();
