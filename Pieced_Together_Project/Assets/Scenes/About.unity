@@ -964,17 +964,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Pieced Together <size=55> - About
+  m_text: Pieced Together<size=55> - About
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 280e8c944fa9b8541b1409f236c168be, type: 2}
-  m_sharedMaterial: {fileID: 4633236453014095479, guid: 280e8c944fa9b8541b1409f236c168be, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 75c48ac73140f0d4c9a72a880545e3b6, type: 2}
+  m_sharedMaterial: {fileID: -5678371005689896834, guid: 75c48ac73140f0d4c9a72a880545e3b6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4291158271
+  m_fontColor: {r: 1, g: 0.8784314, b: 0.77254903, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
