@@ -46,8 +46,10 @@ public class WinMenu : MonoBehaviour
         "This still doesn't make you eligable for that bonus. Nice try, though.",
         "I <i>guess</i> we can strike <b>one</b> shortcoming from the record...",
         "Okay, now you're just <i>copying</i> Kevin. Do good without leeching off him!",
+        "Great, now you're going to start thinking you're actually <i>good</i> at this job...",
+        "Just because you did <b><i><color=\"green\">okay</i></b></color> this time, remember not to get too confident.",
         "You're lucky the red box isn't labeled fragile. Might be the only reason you're competent at your job.",
-        "I don't know why I have to praise you for doing the bare minmum, but it's required.\n<b><i><color=\"green\"><align=\"center\">Yay, you did it"//,
+        "I don't know why I have to praise you for doing the bare minimum, but it's required.\n<b><i><color=\"green\"><align=\"center\">Yay, you did it"//,
         //"Do we even know what's in that red box? It seems to glow sometimes. Don't move things too much, just |.\n<size=18><i>Please..."
     };
     string comment_bad;
